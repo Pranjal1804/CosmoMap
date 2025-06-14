@@ -40,3 +40,34 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 pnpm-lock.yaml
+
+# AI Models and Data
+/ai/models/*.onnx
+/ai/models/*.pb
+/ai/models/*.tflite
+/ai/models/*.pt
+/ai/models/*.pth
+/uploads/*
+!/uploads/.gitkeep
+
+# Training data
+/datasets/
+/training_data/
+/annotations/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Environment
+venv/
+env/
+ENV/

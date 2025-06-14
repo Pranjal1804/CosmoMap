@@ -6,7 +6,6 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 import { Detection, Stats, FilterType } from '@/types';
 
-// Dynamically import map component to avoid SSR issues
 const MapContainer = dynamic(() => import('./MapContainer'), {
   ssr: false,
   loading: () => <div>Loading map...</div>
@@ -21,6 +20,7 @@ export default function TacticalDashboard() {
   });
   const [currentFilter, setCurrentFilter] = useState<FilterType>('all');
   const [isLoading, setIsLoading] = useState(false);
+  const [analysisResults, setAnalysisResults] = useState<any>(null);
   
   const mapRef = useRef<any>(null);
 
@@ -28,7 +28,6 @@ export default function TacticalDashboard() {
     loadDetections();
     loadStats();
     
-    // Auto-refresh every 30 seconds
     const interval = setInterval(() => {
       loadDetections();
       loadStats();
@@ -84,6 +83,7 @@ export default function TacticalDashboard() {
           onUploadSuccess={handleUploadSuccess}
           onDetectionClick={focusDetection}
           isLoading={isLoading}
+          analysisResults={analysisResults}
         />
         <MapContainer
           ref={mapRef}
