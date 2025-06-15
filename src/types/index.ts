@@ -8,8 +8,21 @@ export interface Detection {
     lat: number;
     lng: number;
   };
+  boundingBox?: {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    width: number;
+    height: number;
+  };
   timestamp: string;
   imageFilename: string;
+  imageShape?: {
+    width: number;
+    height: number;
+  };
+  region?: string;
 }
 
 export interface Stats {
@@ -20,6 +33,15 @@ export interface Stats {
     count: number;
     avgConfidence: number;
   }[];
+  uniqueObjectTypes?: number;
+  averageConfidence?: number;
+  highConfidenceCount?: number;
+  coordinateBounds?: {
+    minLat: number;
+    maxLat: number;
+    minLng: number;
+    maxLng: number;
+  } | null;
 }
 
 export type FilterType = 'all' | 'tactical' | 'recent';

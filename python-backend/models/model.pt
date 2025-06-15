@@ -1,0 +1,68 @@
+import cv2
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import FileResponse
+import uvicorn
+from ultralytics import YOLO
+import numpy as np
+
+from cv2.typing import MatLike
+
+def detect_objects_and_draw(image: MatLike):
+    result_image = image
+    yolo_model = YOLO('qualcomm.pt')
+    results = yolo_model(result_image)
+
+    for result in results:
+        classes = result.names
+        cls = result.boxes.cls
+        conf = result.boxes.conf
+        detections = result.boxes.xyxy
+
+        for pos, detection in enumerate(detections):
+            xmin, ymin, xmax, ymax = detection
+            label = f"{classes[int(cls[pos])]} {conf[pos]:.2f}" 
+            color = (0, int(cls[pos]), 255)
+            cv2.rectangle(result_image, (int(xmin), int(ymin)), (int(xmax), int(ymax)), color, 2)
+            cv2.putText(result_image, label, (int(xmin), int(ymin) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1, cv2.LINE_AA)
+    
+    return result_image
+
+def detect_objects_and_plot(image: MatLike):
+    input_image = image
+    yolo_model = YOLO('qualcomm.pt')
+    results = yolo_model(input_image)
+    resultdict = {}
+    resultdict["classes"] = set()
+
+    for result in results:
+        classes = result.names
+        cls = result.boxes.cls
+        conf = result.boxes.conf
+        detections = result.boxes.xyxy
+
+        for pos, detection in enumerate(detections):
+            xmin, ymin, xmax, ymax = detection.cpu().numpy()
+            print(classes)
+            label = f"{classes[int(cls[pos])]}" 
+            resultdict["classes"].add(label)
+            resultdict.setdefault(label, [])
+            resultdict[label].append(list(map(int, [xmin, ymin, xmax, ymax])))
+    
+    return resultdict
+
+
+def run_server():
+    server = FastAPI()
+
+    @server.post("/detect")
+    async def detect_objects(file: UploadFile = File(...)):
+        image_bytes = await file.read()
+        image = cv2.imdecode(np.frombuffer(image_bytes, np.uint8), cv2.IMREAD_COLOR)
+        result = detect_objects_and_plot(image)
+        return result
+
+    uvicorn.run(server, host="0.0.0.0", port=8000)
+
+if __name__ == "__main__":
+    run_server()
+

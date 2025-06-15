@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "python:setup": "cd python-backend && chmod +x start.sh",
+    "dev:full": "./start-tactmap.sh",
+    "backend:start": "cd python-backend && ./start.sh",
+    "backend:test": "cd python-backend && python load_mode.py"
   },
   "dependencies": {
     "@types/leaflet": "^1.9.18",
